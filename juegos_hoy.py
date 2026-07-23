@@ -161,6 +161,21 @@ else:
             "whip",
             "N/D",
         )
+        era_bullpen_visitante_num = convertir_numero(
+            era_bullpen_visitante
+        )
+        era_bullpen_local_num = convertir_numero(
+            era_bullpen_local
+        )
+        whip_bullpen_visitante_num = convertir_numero(
+            whip_bullpen_visitante
+        )
+        whip_bullpen_local_num = convertir_numero(
+            whip_bullpen_local
+        )
+
+        puntos_bullpen_visitante = 0
+        puntos_bullpen_local = 0
         ops_visitante = bateo_visitante.get("ops", "N/D")
         ops_local = bateo_local.get("ops", "N/D")
         ops_visitante_num = convertir_numero(ops_visitante)
@@ -332,6 +347,8 @@ else:
             puntos_local,
             puntos_ofensiva_visitante,
             puntos_ofensiva_local,
+            puntos_bullpen_visitante,
+            puntos_bullpen_local,
         )
 
         print(f"    Pronóstico preliminar: {pronostico['ganador']}")
