@@ -30,7 +30,45 @@ with pestana_pronosticos:
             "Pronósticos guardados",
             len(pronosticos),
         )
+        ultimo = pronosticos.iloc[-1]
 
+        st.markdown("### Último pronóstico")
+
+        columna_1, columna_2, columna_3 = st.columns(3)
+
+        with columna_1:
+            st.metric(
+                "Ganador previsto",
+                ultimo["ganador_pronosticado"],
+            )
+
+        with columna_2:
+            st.metric(
+                "Probabilidad",
+                f"{ultimo['probabilidad']}%",
+            )
+
+        with columna_3:
+            st.metric(
+                "Recomendación",
+                ultimo["recomendacion"],
+            )
+
+        juego = (
+            f"{ultimo['visitante']} vs. "
+            f"{ultimo['local']}"
+        )
+        st.write(f"**Juego:** {juego}")
+
+        if ultimo["recomendacion"] == "No apostar":
+            st.warning(
+                "La ventaja calculada no es suficiente "
+                "para recomendar una selección."
+            )
+        else:
+            st.success(
+                "El modelo detectó una ventaja preliminar."
+            )
         st.dataframe(
             pronosticos,
             width="stretch",
