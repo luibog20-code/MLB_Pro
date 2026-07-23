@@ -66,4 +66,36 @@ def obtener_estadisticas_bateo(equipo_id):
         f"https://statsapi.mlb.com/api/v1/teams/{equipo_id}/stats"
     )
 
+def obtener_estadisticas_bullpen(equipo_id):
+    url = (
+        f"https://statsapi.mlb.com/api/v1/"
+        f"teams/{equipo_id}/stats"
+    )
+
+    parametros = {
+        "stats": "statSplits",
+        "group": "pitching",
+        "sitCodes": "rp",
+        "season": date.today().year,
+    }
+
+    respuesta = requests.get(
+        url,
+        params=parametros,
+        timeout=20,
+    )
+    respuesta.raise_for_status()
+
+    datos = respuesta.json()
+
+    if not datos.get("stats"):
+        return {}
+
+    resultados = datos["stats"][0].get("splits", [])
+
+    if not resultados:
+        return {}
+
+    return resultados[0].get("stat", {})
+
     return obtener_estadisticas_temporada(url, "hitting")

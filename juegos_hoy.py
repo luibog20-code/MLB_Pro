@@ -6,6 +6,7 @@ import requests
 from mlb_api import obtener_juegos as consultar_juegos
 from mlb_api import obtener_estadisticas_pitcher as consultar_pitcher
 from mlb_api import obtener_estadisticas_bateo as consultar_bateo
+from mlb_api import obtener_estadisticas_bullpen as consultar_bullpen
 from modelo import calcular_pronostico
 from historial import guardar_pronostico
 ARCHIVO_HISTORIAL = Path("data") / "analisis_diario.csv"
@@ -140,6 +141,26 @@ else:
             continue
         bateo_visitante = consultar_bateo(id_visitante)
         bateo_local = consultar_bateo(id_local)
+        bullpen_visitante = consultar_bullpen(id_visitante)
+        bullpen_local = consultar_bullpen(id_local)
+
+        era_bullpen_visitante = bullpen_visitante.get(
+            "era",
+            "N/D",
+        )
+        era_bullpen_local = bullpen_local.get(
+            "era",
+            "N/D",
+        )
+
+        whip_bullpen_visitante = bullpen_visitante.get(
+            "whip",
+            "N/D",
+        )
+        whip_bullpen_local = bullpen_local.get(
+            "whip",
+            "N/D",
+        )
         ops_visitante = bateo_visitante.get("ops", "N/D")
         ops_local = bateo_local.get("ops", "N/D")
         ops_visitante_num = convertir_numero(ops_visitante)
@@ -293,6 +314,16 @@ else:
         print(f"   Ponches: {ponches_local} | K/9: {k9_local} | BB/9: {bb9_local} | Entradas: {entradas_local}")
         print(f"   Puntos de pitchers: {pitcher_visitante} {puntos_visitante} - {puntos_local} {pitcher_local}")
         print(f"   Ventaja básica del abridor: {ventaja_pitcher}")
+        print(
+            f"    Bullpen visitante - "
+            f"ERA: {era_bullpen_visitante} | "
+            f"WHIP: {whip_bullpen_visitante}"
+        )
+        print(
+            f"    Bullpen local - "
+            f"ERA: {era_bullpen_local} | "
+            f"WHIP: {whip_bullpen_local}"
+        )
         print(f"   Estado: {estado}")
         pronostico = calcular_pronostico(
             visitante,
