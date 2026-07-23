@@ -60,7 +60,7 @@ def actualizar_resultados():
         })
 
     if not resultados_finales:
-        print("Todavía no hay resultados finales para guardar.")
+        print("Todavia no hay resultados finales para guardar.")
         return
 
     with ARCHIVO_RESULTADOS.open(

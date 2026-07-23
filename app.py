@@ -1,3 +1,5 @@
+import subprocess
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -15,6 +17,55 @@ st.set_page_config(
 
 st.title("⚾ MLB Pro AI")
 st.caption("Pronósticos y seguimiento de juegos MLB")
+columna_generar, columna_resultados, columna_refrescar = st.columns(3)
+
+with columna_generar:
+    if st.button(
+        "Generar pronósticos",
+        use_container_width=True,
+    ):
+        with st.spinner("Analizando juegos..."):
+            proceso = subprocess.run(
+                [sys.executable, "juegos_hoy.py"],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+
+        if proceso.returncode == 0:
+            st.success("Pronósticos actualizados.")
+        else:
+            st.error("No se pudieron generar los pronósticos.")
+            st.code(proceso.stderr)
+
+with columna_resultados:
+    if st.button(
+        "Actualizar resultados",
+        use_container_width=True,
+    ):
+        with st.spinner("Consultando resultados..."):
+            proceso = subprocess.run(
+                [sys.executable, "actualizar_resultados.py"],
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+            )
+
+        if proceso.returncode == 0:
+            st.success("Resultados consultados.")
+            st.code(proceso.stdout)
+        else:
+            st.error("No se pudieron actualizar los resultados.")
+            st.code(proceso.stderr)
+
+with columna_refrescar:
+    if st.button(
+        "Refrescar pantalla",
+        use_container_width=True,
+    ):
+        st.rerun()
 
 pestana_pronosticos, pestana_resultados = st.tabs(
     ["Pronósticos", "Resultados"]
