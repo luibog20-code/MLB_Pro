@@ -7,6 +7,7 @@ from mlb_api import obtener_juegos as consultar_juegos
 from mlb_api import obtener_estadisticas_pitcher as consultar_pitcher
 from mlb_api import obtener_estadisticas_bateo as consultar_bateo
 from modelo import calcular_pronostico
+from historial import guardar_pronostico
 ARCHIVO_HISTORIAL = Path("data") / "analisis_diario.csv"
 ESTADOS_ANALIZABLES = {
     "Scheduled",
@@ -305,7 +306,15 @@ else:
         print(f"    Pronóstico preliminar: {pronostico['ganador']}")
         print(f"    Probabilidad estimada: {pronostico['probabilidad']}%")
         print(f"    Recomendación: {pronostico['recomendacion']}")
-
+        guardar_pronostico({
+            "juego_id": juego["gamePk"],
+            "fecha": fecha_hoy,
+            "visitante": visitante,
+            "local": local,
+            "ganador_pronosticado": pronostico["ganador"],
+            "probabilidad": pronostico["probabilidad"],
+            "recomendacion": pronostico["recomendacion"],
+        })
         guardar_analisis({
                 "juego_id": juego["gamePk"],
                 "fecha": fecha_hoy,
