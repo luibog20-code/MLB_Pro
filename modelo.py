@@ -29,10 +29,17 @@ def calcular_pronostico(
         ganador = "Empate"
 
     probabilidad = 50 + min(abs(diferencia) * 5, 20)
+    if probabilidad < 55:
+        recomendacion = "No apostar"
+    elif probabilidad < 60:
+        recomendacion = "Confianza baja"
+    else:
+        recomendacion = "Confianza moderada"
 
     return {
         "ganador": ganador,
         "probabilidad": round(probabilidad, 1),
+        "recomendacion": recomendacion,
         "puntos_visitante": total_visitante,
         "puntos_local": total_local,
     }

@@ -304,6 +304,7 @@ else:
 
         print(f"    Pronóstico preliminar: {pronostico['ganador']}")
         print(f"    Probabilidad estimada: {pronostico['probabilidad']}%")
+        print(f"    Recomendación: {pronostico['recomendacion']}")
 
         guardar_analisis({
                 "juego_id": juego["gamePk"],
