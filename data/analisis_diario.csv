@@ -1,0 +1,6 @@
+﻿juego_id,fecha,visitante,local,estado,porcentaje_visitante,porcentaje_local,ops_visitante,ops_local,carreras_juego_visitante,carreras_juego_local,pitcher_visitante,pitcher_local,puntos_pitcher_visitante,puntos_pitcher_local,ventaja_pitcher,puntos_ofensiva_visitante,puntos_ofensiva_local,ventaja_ofensiva
+824247,2026-07-23,Kansas City Royals,Detroit Tigers,Pre-Game,41.699999999999996,47.099999999999994,.715,.712,4.25,4.25,Randy Dobnak,Troy Melton,0,3,Troy Melton,2,0,Kansas City Royals
+824893,2026-07-23,San Diego Padres,Atlanta Braves,Final,48.5,58.8,.690,.736,4.14,4.98,Kyle Hart,Chris Sale,0,1,Chris Sale,0,2,Atlanta Braves
+824406,2026-07-23,Minnesota Twins,Cleveland Guardians,Final,49.0,51.9,.730,.687,4.79,4.01,Taj Bradley,Gavin Williams,0,1,Gavin Williams,2,0,Minnesota Twins
+822785,2026-07-23,Tampa Bay Rays,Toronto Blue Jays,In Progress,58.4,45.1,.735,.681,4.50,3.92,Casey Legumina,Shane Bieber,1,0,Casey Legumina,2,0,Tampa Bay Rays
+823042,2026-07-23,Arizona Diamondbacks,St. Louis Cardinals,Warmup,52.0,51.5,.704,.700,4.47,4.44,Brandon Pfaadt,Michael McGreevy,0,1,Michael McGreevy,2,0,Arizona Diamondbacks
