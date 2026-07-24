@@ -232,13 +232,36 @@ with pestana_pronosticos:
     if ARCHIVO_PRONOSTICOS.exists():
         pronosticos = pd.read_csv(ARCHIVO_PRONOSTICOS)
 
-        st.metric(
-            "Pronósticos guardados",
-            len(pronosticos),
+        fecha_reciente = (
+            pronosticos["fecha"].astype(str).max()
         )
-        ultimo = pronosticos.iloc[-1]
+        pronosticos_recientes = pronosticos[
+            pronosticos["fecha"].astype(str) == fecha_reciente
+        ]
 
-        st.markdown("#### Último pronóstico de IA")
+        columna_total, columna_dia = st.columns(2)
+        with columna_total:
+            st.metric(
+                "Pronósticos guardados",
+                len(pronosticos),
+            )
+        with columna_dia:
+            st.metric(
+                "Juegos de la fecha más reciente",
+                len(pronosticos_recientes),
+            )
+
+        indice_seleccionado = st.selectbox(
+            "Selecciona un juego",
+            options=pronosticos_recientes.index.tolist(),
+            format_func=lambda indice: (
+                f"{pronosticos.loc[indice, 'visitante']} vs. "
+                f"{pronosticos.loc[indice, 'local']}"
+            ),
+        )
+        ultimo = pronosticos.loc[indice_seleccionado]
+
+        st.markdown("#### Pronóstico seleccionado")
 
         columna_1, columna_2, columna_3 = st.columns(3)
 
