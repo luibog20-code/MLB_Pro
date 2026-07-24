@@ -12,6 +12,7 @@ def crear_estado_equipo():
     return {
         "juegos": 0,
         "victorias": 0,
+        "ultima_fecha": None,
         "carreras_anotadas": 0,
         "carreras_permitidas": 0,
         "ultimos_resultados": deque(
@@ -96,6 +97,35 @@ def preparar_dataset():
 
             estado_visitante = estados[id_visitante]
             estado_local = estados[id_local]
+            
+            fecha_actual = pd.to_datetime(juego["fecha"])
+
+            if estado_visitante["ultima_fecha"] is None:
+                descanso_visitante = 7
+            else:
+                descanso_visitante = max(
+                    (
+                        fecha_actual
+                        - estado_visitante["ultima_fecha"]
+                    ).days
+                    - 1,
+                    0,
+                )
+
+            if estado_local["ultima_fecha"] is None:
+                descanso_local = 7
+            else:
+                descanso_local = max(
+                    (
+                        fecha_actual
+                        - estado_local["ultima_fecha"]
+                    ).days
+                    - 1,
+                    0,
+                )
+
+            descanso_visitante = min(descanso_visitante, 7)
+            descanso_local = min(descanso_local, 7)
 
             previo_visitante = resumir_estado(
                     estado_visitante
@@ -107,6 +137,8 @@ def preparar_dataset():
                     "juego_id": int(juego["juego_id"]),
                     "fecha": juego["fecha"],
                     "temporada": temporada,
+                    "descanso_visitante": descanso_visitante,
+                    "descanso_local": descanso_local,
                     "juegos_previos_visitante": (
                         estado_visitante["juegos"]
                     ),
@@ -170,7 +202,11 @@ def preparar_dataset():
                     carreras_local,
                     carreras_visitante,
                     gano_local,
-                )
+                    
+            )
+
+            estado_visitante["ultima_fecha"] = fecha_actual
+            estado_local["ultima_fecha"] = fecha_actual
 
         dataset = pd.DataFrame(filas_dataset)
 

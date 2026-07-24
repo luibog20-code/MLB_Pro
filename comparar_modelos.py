@@ -12,6 +12,8 @@ ARCHIVO_DATOS = Path("data") / "dataset_entrenamiento.csv"
 TEMPORADA_PRUEBA = 2026
 
 VARIABLES = [
+    "descanso_visitante",
+    "descanso_local",
     "porcentaje_visitante",
     "porcentaje_local",
     "forma_visitante",

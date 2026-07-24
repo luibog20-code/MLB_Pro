@@ -10,6 +10,8 @@ from sklearn.preprocessing import StandardScaler
 ARCHIVO_DATOS = Path("data") / "dataset_entrenamiento.csv"
 
 VARIABLES = [
+    "descanso_visitante",
+    "descanso_local",
     "porcentaje_visitante",
     "porcentaje_local",
     "forma_visitante",

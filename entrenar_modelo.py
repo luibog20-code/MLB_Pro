@@ -16,6 +16,8 @@ ARCHIVO_DATASET = Path("data") / "dataset_entrenamiento.csv"
 ARCHIVO_MODELO = Path("models") / "modelo_mlb.joblib"
 
 VARIABLES = [
+    "descanso_visitante",
+    "descanso_local",
     "porcentaje_visitante",
     "porcentaje_local",
     "forma_visitante",
