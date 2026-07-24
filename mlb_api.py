@@ -64,7 +64,7 @@ def obtener_estadisticas_bateo(equipo_id):
     url = (
         f"https://statsapi.mlb.com/api/v1/teams/{equipo_id}/stats"
     )
-
+    return obtener_estadisticas_temporada(url, "hitting")   
 def obtener_estadisticas_bullpen(equipo_id):
     url = (
         f"https://statsapi.mlb.com/api/v1/"
@@ -97,7 +97,6 @@ def obtener_estadisticas_bullpen(equipo_id):
 
     return resultados[0].get("stat", {})
 
-    return obtener_estadisticas_temporada(url, "hitting")
 def obtener_forma_reciente(equipo_id, cantidad=10):
     fecha_final = date.today()
     fecha_inicial = fecha_final - timedelta(days=20)
