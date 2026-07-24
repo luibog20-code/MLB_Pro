@@ -122,11 +122,31 @@ def preparar_dataset():
                     "forma_visitante": (
                         previo_visitante["forma_reciente"]
                     ),
-                    "forma_local": (
-                        previo_local["forma_reciente"]
-                    ),
-                    "gano_local": int(juego["gano_local"]),
-                }
+                      "forma_local": (
+                          previo_local["forma_reciente"]
+                      ),
+            "carreras_anotadas_visitante": (
+                previo_visitante[
+                    "carreras_anotadas_promedio"
+                ]
+            ),
+            "carreras_anotadas_local": (
+                previo_local[
+                    "carreras_anotadas_promedio"
+                ]
+            ),
+            "carreras_permitidas_visitante": (
+                previo_visitante[
+                    "carreras_permitidas_promedio"
+                ]
+            ),
+            "carreras_permitidas_local": (
+                previo_local[
+                    "carreras_permitidas_promedio"
+                ]
+            ),
+            "gano_local": int(juego["gano_local"]),
+            }
 
             filas_dataset.append(fila_dataset)
             carreras_visitante = int(
