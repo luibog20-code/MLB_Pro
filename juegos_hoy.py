@@ -10,7 +10,7 @@ from mlb_api import obtener_estadisticas_bullpen as consultar_bullpen
 from mlb_api import obtener_forma_reciente as consultar_forma_reciente
 from modelo import calcular_pronostico
 from historial import guardar_pronostico
-ARCHIVO_HISTORIAL = Path("data") / "analisis_diario.csv"
+ARCHIVO_HISTORIAL = Path("data") / "analisis_modelo.csv"
 ESTADOS_ANALIZABLES = {
     "Scheduled",
     "Pre-Game",
@@ -409,5 +409,9 @@ else:
                 "puntos_ofensiva_visitante": puntos_ofensiva_visitante,
                 "puntos_ofensiva_local": puntos_ofensiva_local,
                 "ventaja_ofensiva": ventaja_ofensiva
+                "forma_reciente_visitante": porcentaje_reciente_visitante,
+                "forma_reciente_local": porcentaje_reciente_local,
+                "puntos_forma_visitante": puntos_forma_visitante,
+                "puntos_forma_local": puntos_forma_local,
             })
         print()
