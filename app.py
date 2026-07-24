@@ -299,6 +299,17 @@ with pestana_pronosticos:
                 "La IA detectó una ventaja estadística suficiente."
             )
         mostrar_mercado_y_valor(ultimo, pronosticos)
+        respaldo_pronosticos = pronosticos.to_csv(
+            index=False
+        ).encode("utf-8-sig")
+
+        st.download_button(
+            "Descargar respaldo de pronósticos",
+            data=respaldo_pronosticos,
+            file_name="pronosticos_mlb_pro.csv",
+            mime="text/csv",
+            use_container_width=True,
+        )
         st.dataframe(
             pronosticos,
             width="stretch",
