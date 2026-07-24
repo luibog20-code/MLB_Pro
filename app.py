@@ -9,6 +9,65 @@ import streamlit as st
 
 ARCHIVO_PRONOSTICOS = Path("data") / "pronosticos.csv"
 ARCHIVO_RESULTADOS = Path("data") / "resultados.csv"
+def mostrar_mercado_y_valor(ultimo, pronosticos):
+    if "cuota" not in pronosticos.columns:
+        return
+
+    cuota = ultimo.get("cuota")
+
+    if pd.isna(cuota) or str(cuota).strip() == "":
+        return
+
+    st.markdown("### Mercado y valor")
+
+    columna_1, columna_2, columna_3, columna_4 = (
+        st.columns(4)
+    )
+
+    with columna_1:
+        st.metric(
+            "Selección de valor",
+            ultimo.get("seleccion_valor", "N/D"),
+        )
+
+    with columna_2:
+        st.metric(
+            "Mejor cuota",
+            f"{float(cuota):+.0f}",
+        )
+
+    with columna_3:
+        st.metric(
+            "Casa",
+            ultimo.get("casa", "N/D"),
+        )
+
+    with columna_4:
+        st.metric(
+            "Valor esperado",
+            (
+                f"{float(ultimo['valor_esperado']):+.1f}%"
+            ),
+        )
+
+    st.write(
+        f"**Mercado sin margen:** "
+        f"{ultimo['visitante']} "
+        f"{float(ultimo['mercado_visitante']):.1f}% | "
+        f"{ultimo['local']} "
+        f"{float(ultimo['mercado_local']):.1f}%"
+    )
+
+    st.write(
+        f"**Ventaja IA frente al mercado:** "
+        f"{float(ultimo['ventaja_mercado']):+.1f} puntos"
+    )
+
+    st.warning(
+        f"Decisión: "
+        f"{ultimo.get('decision_valor', 'N/D')}. "
+        "Esta señal todavía es experimental."
+    )
 ICONO_APP = Image.open(Path("assets") / "mlb-pro-ai-icon.png")
 st.set_page_config(
     page_title="MLB Pro AI",
@@ -121,6 +180,7 @@ with pestana_pronosticos:
             st.success(
                 "La IA detectó una ventaja estadística suficiente."
             )
+        mostrar_mercado_y_valor(ultimo, pronosticos)
         st.dataframe(
             pronosticos,
             width="stretch",

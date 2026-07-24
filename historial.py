@@ -21,6 +21,9 @@ def guardar_pronostico(fila):
         exist_ok=True,
     )
 
+    filas_existentes = []
+    campos_existentes = []
+
     if ARCHIVO_PRONOSTICOS.exists():
         with ARCHIVO_PRONOSTICOS.open(
             "r",
@@ -28,29 +31,50 @@ def guardar_pronostico(fila):
             encoding="utf-8-sig",
         ) as archivo:
             lector = csv.DictReader(archivo)
+            campos_existentes = lector.fieldnames or []
+            filas_existentes = list(lector)
 
-            for fila_existente in lector:
-                if fila_existente.get("juego_id") == str(
-                    fila.get("juego_id")
-                ):
-                    return False
+    juego_id = str(fila.get("juego_id"))
 
-    archivo_nuevo = not ARCHIVO_PRONOSTICOS.exists()
+    fila_actualizada = {
+        clave: "" if valor is None else str(valor)
+        for clave, valor in fila.items()
+    }
+
+    encontrado = False
+
+    for indice, fila_existente in enumerate(
+        filas_existentes
+    ):
+        if fila_existente.get("juego_id") == juego_id:
+            fila_existente.update(fila_actualizada)
+            filas_existentes[indice] = fila_existente
+            encontrado = True
+            break
+
+    if not encontrado:
+        filas_existentes.append(fila_actualizada)
+
+    campos = list(
+        dict.fromkeys(
+            [
+                *campos_existentes,
+                *fila_actualizada.keys(),
+            ]
+        )
+    )
 
     with ARCHIVO_PRONOSTICOS.open(
-        "a",
+        "w",
         newline="",
         encoding="utf-8-sig",
     ) as archivo:
         escritor = csv.DictWriter(
             archivo,
-            fieldnames=CAMPOS,
+            fieldnames=campos,
             extrasaction="ignore",
         )
-
-        if archivo_nuevo:
-            escritor.writeheader()
-
-        escritor.writerow(fila)
+        escritor.writeheader()
+        escritor.writerows(filas_existentes)
 
     return True

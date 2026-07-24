@@ -1,2 +1,2 @@
-﻿juego_id,fecha,visitante,local,ganador_pronosticado,probabilidad,recomendacion
-823196,2026-07-24,Los Angeles Angels,San Francisco Giants,San Francisco Giants,52.5,No apostar
+﻿juego_id,fecha,visitante,local,ganador_pronosticado,probabilidad,recomendacion,mercado_visitante,mercado_local,seleccion_valor,cuota,casa,ventaja_mercado,valor_esperado,decision_valor
+823196,2026-07-24,Los Angeles Angels,San Francisco Giants,San Francisco Giants,52.5,No apostar,39.2,60.8,Los Angeles Angels,152,FanDuel,8.3,19.7,Valor experimental

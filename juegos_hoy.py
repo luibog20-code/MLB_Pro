@@ -9,6 +9,12 @@ from mlb_api import obtener_estadisticas_bateo as consultar_bateo
 from mlb_api import obtener_estadisticas_bullpen as consultar_bullpen
 from mlb_api import obtener_forma_reciente as consultar_forma_reciente
 from modelo import calcular_pronostico
+from cuotas import (
+    analizar_valor,
+    buscar_cuotas_juego,
+    crear_indice_cuotas,
+    obtener_cuotas_mlb,
+)
 from estado_actual import (
     construir_estados,
     crear_variables_juego,
@@ -120,6 +126,18 @@ def obtener_estadisticas_bateo(equipo_id):
 fecha_hoy = date.today().strftime("%Y-%m-%d")
 
 juegos = consultar_juegos(fecha_hoy)
+try:
+    juegos_con_cuotas, creditos_cuotas = (
+        obtener_cuotas_mlb()
+    )
+    indice_cuotas = crear_indice_cuotas(
+        juegos_con_cuotas
+    )
+    error_cuotas = None
+except (requests.RequestException, RuntimeError) as error:
+    indice_cuotas = {}
+    creditos_cuotas = "N/D"
+    error_cuotas = str(error)
 
 print("=" * 50)
 print("MLB PRO AI")
@@ -169,6 +187,30 @@ pronostico_ia = predecir_juego(
     local,
     variables_ia,
 )
+resumen_cuotas = buscar_cuotas_juego(
+            indice_cuotas,
+            visitante,
+            local,
+        )
+analisis_valor = None
+
+if resumen_cuotas is not None:
+            if pronostico_ia["ganador"] == local:
+                probabilidad_local_ia = (
+                    pronostico_ia["probabilidad"]
+                )
+            elif pronostico_ia["ganador"] == visitante:
+                probabilidad_local_ia = (
+                    100
+                    - pronostico_ia["probabilidad"]
+                )
+            else:
+                probabilidad_local_ia = 50.0
+
+            analisis_valor = analizar_valor(
+                probabilidad_local_ia,
+                resumen_cuotas,
+            )
 bateo_visitante = consultar_bateo(id_visitante) or {}
 bateo_local = consultar_bateo(id_local) or {}
 forma_visitante = consultar_forma_reciente(id_visitante)
@@ -402,6 +444,99 @@ print(f"    Recomendación: {pronostico['recomendacion']}")
 print(f"    Pronóstico IA: {pronostico_ia['ganador']}")
 print(f"    Probabilidad IA: {pronostico_ia['probabilidad']}%")
 print(f"    Recomendación IA: {pronostico_ia['recomendacion']}")
+
+if analisis_valor is not None:
+            mercado_visitante = (
+                resumen_cuotas[
+                    "probabilidad_mercado_visitante"
+                ]
+                * 100
+            )
+            mercado_local = (
+                resumen_cuotas[
+                    "probabilidad_mercado_local"
+                ]
+                * 100
+            )
+
+            print(
+                f"    Mercado sin margen: "
+                f"{visitante} {mercado_visitante:.1f}% | "
+                f"{local} {mercado_local:.1f}%"
+            )
+            print(
+                f"    Selección con valor: "
+                f"{analisis_valor['seleccion']}"
+            )
+            print(
+                f"    Mejor cuota: "
+                f"{analisis_valor['cuota']} "
+                f"en {analisis_valor['casa']}"
+            )
+            print(
+                f"    Ventaja IA vs. mercado: "
+                f"{analisis_valor['ventaja'] * 100:+.1f} puntos"
+            )
+            print(
+                f"    Valor esperado estimado: "
+                f"{analisis_valor['valor_esperado'] * 100:+.1f}%"
+            )
+            print(
+                f"    Decisión de valor: "
+                f"{analisis_valor['recomendacion']}"
+            )
+            print(
+                "    Aviso: señal experimental; "
+                "todavía requiere validación."
+            )
+else:
+            print(
+                "    Cuotas de mercado no disponibles."
+            )
+if analisis_valor is not None:
+    campos_valor = {
+        "mercado_visitante": round(
+            resumen_cuotas[
+                "probabilidad_mercado_visitante"
+            ]
+            * 100,
+            1,
+        ),
+        "mercado_local": round(
+            resumen_cuotas[
+                "probabilidad_mercado_local"
+            ]
+            * 100,
+            1,
+        ),
+        "seleccion_valor": analisis_valor[
+            "seleccion"
+        ],
+        "cuota": analisis_valor["cuota"],
+        "casa": analisis_valor["casa"],
+        "ventaja_mercado": round(
+            analisis_valor["ventaja"] * 100,
+            1,
+        ),
+        "valor_esperado": round(
+            analisis_valor["valor_esperado"] * 100,
+            1,
+        ),
+        "decision_valor": analisis_valor[
+            "recomendacion"
+        ],
+    }
+else:
+    campos_valor = {
+        "mercado_visitante": "",
+        "mercado_local": "",
+        "seleccion_valor": "",
+        "cuota": "",
+        "casa": "",
+        "ventaja_mercado": "",
+        "valor_esperado": "",
+        "decision_valor": "Cuotas no disponibles",
+    }           
 guardar_pronostico({
     "juego_id": juego["gamePk"],
     "fecha": fecha_hoy,
@@ -410,6 +545,7 @@ guardar_pronostico({
     "ganador_pronosticado": pronostico_ia["ganador"],
     "probabilidad": pronostico_ia["probabilidad"],
     "recomendacion": pronostico_ia["recomendacion"],
+    **campos_valor,
 })
 guardar_analisis({
             "juego_id": juego["gamePk"],
