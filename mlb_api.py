@@ -1,6 +1,5 @@
 import requests
-from datetime import date
-
+from datetime import date, timedelta
 
 URL_CALENDARIO = "https://statsapi.mlb.com/api/v1/schedule"
 
@@ -99,3 +98,73 @@ def obtener_estadisticas_bullpen(equipo_id):
     return resultados[0].get("stat", {})
 
     return obtener_estadisticas_temporada(url, "hitting")
+def obtener_forma_reciente(equipo_id, cantidad=10):
+    fecha_final = date.today()
+    fecha_inicial = fecha_final - timedelta(days=20)
+
+    parametros = {
+        "sportId": 1,
+        "teamId": equipo_id,
+        "startDate": fecha_inicial.strftime("%Y-%m-%d"),
+        "endDate": fecha_final.strftime("%Y-%m-%d"),
+        "gameType": "R",
+    }
+
+    respuesta = requests.get(
+        URL_CALENDARIO,
+        params=parametros,
+        timeout=20,
+    )
+    respuesta.raise_for_status()
+
+    datos = respuesta.json()
+    resultados = []
+
+    for grupo_fecha in datos.get("dates", []):
+        for juego in grupo_fecha.get("games", []):
+            estado = juego["status"]["detailedState"]
+
+            if estado not in {
+                "Final",
+                "Game Over",
+                "Completed Early",
+            }:
+                continue
+
+            visitante = juego["teams"]["away"]
+            local = juego["teams"]["home"]
+
+            carreras_visitante = visitante.get("score")
+            carreras_local = local.get("score")
+
+            if (
+                carreras_visitante is None
+                or carreras_local is None
+            ):
+                continue
+
+            es_visitante = visitante["team"]["id"] == equipo_id
+
+            if es_visitante:
+                gano = carreras_visitante > carreras_local
+            else:
+                gano = carreras_local > carreras_visitante
+
+            resultados.append(gano)
+
+    resultados = resultados[-cantidad:]
+
+    victorias = sum(resultados)
+    derrotas = len(resultados) - victorias
+
+    if resultados:
+        porcentaje = victorias / len(resultados)
+    else:
+        porcentaje = 0
+
+    return {
+        "juegos": len(resultados),
+        "victorias": victorias,
+        "derrotas": derrotas,
+        "porcentaje": porcentaje,
+    }

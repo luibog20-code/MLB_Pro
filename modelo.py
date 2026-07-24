@@ -7,6 +7,8 @@ def calcular_pronostico(
     puntos_ofensiva_local,
     puntos_bullpen_visitante,
     puntos_bullpen_local,
+    puntos_forma_visitante,
+    puntos_forma_local,
 ):
     ventaja_local = 0.25
 
@@ -14,11 +16,14 @@ def calcular_pronostico(
         puntos_pitcher_visitante
         + puntos_ofensiva_visitante
         + puntos_bullpen_visitante
+        + puntos_forma_visitante
     )
 
     total_local = (
         puntos_pitcher_local
         + puntos_ofensiva_local
+        + puntos_bullpen_local
+        + puntos_forma_local
         + ventaja_local
     )
 

@@ -7,6 +7,7 @@ from mlb_api import obtener_juegos as consultar_juegos
 from mlb_api import obtener_estadisticas_pitcher as consultar_pitcher
 from mlb_api import obtener_estadisticas_bateo as consultar_bateo
 from mlb_api import obtener_estadisticas_bullpen as consultar_bullpen
+from mlb_api import obtener_forma_reciente as consultar_forma_reciente
 from modelo import calcular_pronostico
 from historial import guardar_pronostico
 ARCHIVO_HISTORIAL = Path("data") / "analisis_diario.csv"
@@ -135,12 +136,35 @@ else:
 
         if estado not in ESTADOS_ANALIZABLES:
             print(f"{numero}. {visitante} vs. {local}")
+            print(
+            f"    Forma reciente visitante: "
+            f"{forma_visitante['victorias']}-"
+            f"{forma_visitante['derrotas']}"
+        )
+            print(
+            f"    Forma reciente local: "
+            f"{forma_local['victorias']}-"
+            f"{forma_local['derrotas']}"
+        )
+
             print(f"   Estado: {estado}")
             print("   No se analiza: el juego ya comenzó o terminó.")
             print()
             continue
         bateo_visitante = consultar_bateo(id_visitante)
         bateo_local = consultar_bateo(id_local)
+        forma_visitante = consultar_forma_reciente(id_visitante)
+        forma_local = consultar_forma_reciente(id_local)
+
+        porcentaje_reciente_visitante = forma_visitante["porcentaje"]
+        puntos_forma_visitante = 0
+        puntos_forma_local = 0
+
+        if porcentaje_reciente_visitante > porcentaje_reciente_local:
+            puntos_forma_visitante += 1
+        elif porcentaje_reciente_local > porcentaje_reciente_visitante:
+            puntos_forma_local += 1
+
         bullpen_visitante = consultar_bullpen(id_visitante)
         bullpen_local = consultar_bullpen(id_local)
 
@@ -349,6 +373,8 @@ else:
             puntos_ofensiva_local,
             puntos_bullpen_visitante,
             puntos_bullpen_local,
+            puntos_forma_visitante,
+            puntos_forma_local,
         )
 
         print(f"    Pronóstico preliminar: {pronostico['ganador']}")
