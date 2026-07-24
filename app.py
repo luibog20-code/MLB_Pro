@@ -1,6 +1,7 @@
 import subprocess
 import sys
 from pathlib import Path
+from PIL import Image
 
 import pandas as pd
 import streamlit as st
@@ -8,10 +9,10 @@ import streamlit as st
 
 ARCHIVO_PRONOSTICOS = Path("data") / "pronosticos.csv"
 ARCHIVO_RESULTADOS = Path("data") / "resultados.csv"
-
+ICONO_APP = Image.open(Path("assets") / "mlb-pro-ai-icon.png")
 st.set_page_config(
     page_title="MLB Pro AI",
-    page_icon="⚾",
+    page_icon=ICONO_APP,
     layout="wide",
 )
 
