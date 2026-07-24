@@ -1,10 +1,13 @@
+import os
 import subprocess
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 from PIL import Image
 
 import pandas as pd
 import streamlit as st
+load_dotenv()
 
 
 ARCHIVO_PRONOSTICOS = Path("data") / "pronosticos.csv"
@@ -77,12 +80,28 @@ st.set_page_config(
 
 st.title("⚾ MLB Pro AI")
 st.caption("Pronósticos y seguimiento de juegos MLB")
+pin_guardado = os.getenv("APP_ADMIN_PIN", "")
+
+pin_ingresado = st.text_input(
+    "Código privado para actualizar datos",
+    type="password",
+    placeholder="Escribe tu código privado",
+)
+
+acceso_admin = (
+    bool(pin_guardado)
+    and pin_ingresado == pin_guardado
+)
+
+if pin_ingresado and not acceso_admin:
+    st.error("Código privado incorrecto.")
 columna_generar, columna_resultados, columna_refrescar = st.columns(3)
 
 with columna_generar:
     if st.button(
         "Generar pronósticos",
         use_container_width=True,
+        disabled=not acceso_admin,
     ):
         with st.spinner("Analizando juegos..."):
             proceso = subprocess.run(
@@ -103,6 +122,7 @@ with columna_resultados:
     if st.button(
         "Actualizar resultados",
         use_container_width=True,
+        disabled=not acceso_admin,
     ):
         with st.spinner("Consultando resultados..."):
             proceso = subprocess.run(
