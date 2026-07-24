@@ -83,7 +83,7 @@ with pestana_pronosticos:
         )
         ultimo = pronosticos.iloc[-1]
 
-        st.markdown("### Último pronóstico")
+        st.markdown("#### Último pronóstico de IA")
 
         columna_1, columna_2, columna_3 = st.columns(3)
 
@@ -118,7 +118,7 @@ with pestana_pronosticos:
             )
         else:
             st.success(
-                "El modelo detectó una ventaja preliminar."
+                "La IA detectó una ventaja estadística suficiente."
             )
         st.dataframe(
             pronosticos,
