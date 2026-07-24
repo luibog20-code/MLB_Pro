@@ -407,9 +407,9 @@ guardar_pronostico({
     "fecha": fecha_hoy,
     "visitante": visitante,
     "local": local,
-    "ganador_pronosticado": pronostico["ganador"],
-    "probabilidad": pronostico["probabilidad"],
-    "recomendacion": pronostico["recomendacion"],
+    "ganador_pronosticado": pronostico_ia["ganador"],
+    "probabilidad": pronostico_ia["probabilidad"],
+    "recomendacion": pronostico_ia["recomendacion"],
 })
 guardar_analisis({
             "juego_id": juego["gamePk"],
