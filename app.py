@@ -1,17 +1,91 @@
 import os
 import subprocess
 import sys
+import json
 from pathlib import Path
 from dotenv import load_dotenv
 from PIL import Image
 
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
 load_dotenv()
 
 
 ARCHIVO_PRONOSTICOS = Path("data") / "pronosticos.csv"
 ARCHIVO_RESULTADOS = Path("data") / "resultados.csv"
+
+
+def configurar_instalacion_movil():
+    manifiesto = {
+        "name": "MLB Pro AI",
+        "short_name": "MLB Pro AI",
+        "start_url": "/",
+        "display": "standalone",
+        "background_color": "#071a3d",
+        "theme_color": "#071a3d",
+        "icons": [
+            {
+                "src": "/app/static/mlb-pro-ai-192.png",
+                "sizes": "192x192",
+                "type": "image/png",
+            },
+            {
+                "src": "/app/static/mlb-pro-ai-512.png",
+                "sizes": "512x512",
+                "type": "image/png",
+            },
+        ],
+    }
+    manifiesto_json = json.dumps(
+        manifiesto,
+        ensure_ascii=False,
+    )
+
+    components.html(
+        f"""
+        <script>
+        const head = window.parent.document.head;
+
+        function agregarEnlace(rel, href, sizes = "") {{
+            let enlace = head.querySelector(
+                `link[rel="${{rel}}"]`
+            );
+            if (!enlace) {{
+                enlace = window.parent.document.createElement("link");
+                enlace.rel = rel;
+                head.appendChild(enlace);
+            }}
+            enlace.href = href;
+            if (sizes) enlace.sizes = sizes;
+        }}
+
+        agregarEnlace(
+            "apple-touch-icon",
+            "/app/static/mlb-pro-ai-180.png",
+            "180x180"
+        );
+
+        const manifiesto = {manifiesto_json};
+        const manifiestoUrl =
+            "data:application/manifest+json;charset=utf-8,"
+            + encodeURIComponent(JSON.stringify(manifiesto));
+        agregarEnlace("manifest", manifiestoUrl);
+
+        let tema = head.querySelector('meta[name="theme-color"]');
+        if (!tema) {{
+            tema = window.parent.document.createElement("meta");
+            tema.name = "theme-color";
+            head.appendChild(tema);
+        }}
+        tema.content = "#071a3d";
+        </script>
+        """,
+        height=0,
+        width=0,
+    )
+
+
 def mostrar_mercado_y_valor(ultimo, pronosticos):
     if "cuota" not in pronosticos.columns:
         return
@@ -77,6 +151,7 @@ st.set_page_config(
     page_icon=ICONO_APP,
     layout="wide",
 )
+configurar_instalacion_movil()
 
 st.title("⚾ MLB Pro AI")
 st.caption("Pronósticos y seguimiento de juegos MLB")
