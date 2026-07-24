@@ -77,9 +77,20 @@ def preparar_dataset():
         )
 
         estados = defaultdict(crear_estado_equipo)
+        temporada_actual = None
         filas_dataset = []
 
         for _, juego in juegos.iterrows():
+            temporada = int(
+                str(juego["fecha"])[:4]
+            )
+
+            if temporada != temporada_actual:
+                estados = defaultdict(
+                    crear_estado_equipo
+                )
+                temporada_actual = temporada
+
             id_visitante = int(juego["id_visitante"])
             id_local = int(juego["id_local"])
 
@@ -87,60 +98,61 @@ def preparar_dataset():
             estado_local = estados[id_local]
 
             previo_visitante = resumir_estado(
-                estado_visitante
-            )
+                    estado_visitante
+                )
             previo_local = resumir_estado(
-                estado_local
-            )
+                    estado_local
+                )
             fila_dataset = {
-                "juego_id": int(juego["juego_id"]),
-                "fecha": juego["fecha"],
-                "juegos_previos_visitante": (
-                    estado_visitante["juegos"]
-                ),
-                "juegos_previos_local": (
-                    estado_local["juegos"]
-                ),
-                "porcentaje_visitante": (
-                    previo_visitante["porcentaje_victorias"]
-                ),
-                "porcentaje_local": (
-                    previo_local["porcentaje_victorias"]
-                ),
-                "forma_visitante": (
-                    previo_visitante["forma_reciente"]
-                ),
-                "forma_local": (
-                    previo_local["forma_reciente"]
-                ),
-                "gano_local": int(juego["gano_local"]),
-            }
+                    "juego_id": int(juego["juego_id"]),
+                    "fecha": juego["fecha"],
+                    "temporada": temporada,
+                    "juegos_previos_visitante": (
+                        estado_visitante["juegos"]
+                    ),
+                    "juegos_previos_local": (
+                        estado_local["juegos"]
+                    ),
+                    "porcentaje_visitante": (
+                        previo_visitante["porcentaje_victorias"]
+                    ),
+                    "porcentaje_local": (
+                        previo_local["porcentaje_victorias"]
+                    ),
+                    "forma_visitante": (
+                        previo_visitante["forma_reciente"]
+                    ),
+                    "forma_local": (
+                        previo_local["forma_reciente"]
+                    ),
+                    "gano_local": int(juego["gano_local"]),
+                }
 
             filas_dataset.append(fila_dataset)
             carreras_visitante = int(
-                juego["carreras_visitante"]
-            )
+                    juego["carreras_visitante"]
+                )
             carreras_local = int(
-                juego["carreras_local"]
-            )
+                    juego["carreras_local"]
+                )
             gano_local = int(juego["gano_local"])
             gano_visitante = 1 - gano_local
 
             actualizar_estado(
-                estado_visitante,
-                carreras_visitante,
-                carreras_local,
-                gano_visitante,
-            )
+                    estado_visitante,
+                    carreras_visitante,
+                    carreras_local,
+                    gano_visitante,
+                )
 
             actualizar_estado(
-                estado_local,
-                carreras_local,
-                carreras_visitante,
-                gano_local,
-            )
+                    estado_local,
+                    carreras_local,
+                    carreras_visitante,
+                    gano_local,
+                )
 
-            dataset = pd.DataFrame(filas_dataset)
+        dataset = pd.DataFrame(filas_dataset)
 
         dataset = dataset[
             (

@@ -7,6 +7,7 @@ import requests
 
 URL_CALENDARIO = "https://statsapi.mlb.com/api/v1/schedule"
 ARCHIVO_HISTORICO = Path("data") / "juegos_historicos.csv"
+TEMPORADAS = [2023, 2024, 2025, 2026]
 
 
 def consultar_juegos_historicos(fecha_inicial, fecha_final):
@@ -122,26 +123,40 @@ def guardar_juegos_historicos(filas):
     return len(filas_nuevas)
 
 def main():
-    fecha_final = date.today() - timedelta(days=1)
-    fecha_inicial = fecha_final - timedelta(days=30)
+    total_encontrados = 0
+    total_guardados = 0
 
-    print(
-        f"Consultando desde {fecha_inicial} "
-        f"hasta {fecha_final}..."
-    )
+    for temporada in TEMPORADAS:
+        fecha_inicial = f"{temporada}-03-01"
 
-    datos = consultar_juegos_historicos(
-        fecha_inicial.isoformat(),
-        fecha_final.isoformat(),
-    )
+        if temporada == date.today().year:
+            fecha_final = (
+                date.today() - timedelta(days=1)
+            ).isoformat()
+        else:
+            fecha_final = f"{temporada}-11-15"
 
-    filas = extraer_juegos_finalizados(datos)
-    cantidad_guardada = guardar_juegos_historicos(
-        filas
-    )
+        print(
+            f"Consultando temporada {temporada}: "
+            f"{fecha_inicial} a {fecha_final}..."
+        )
 
-    print(f"Juegos encontrados: {len(filas)}")
-    print(f"Juegos nuevos guardados: {cantidad_guardada}")
+        datos = consultar_juegos_historicos(
+            fecha_inicial,
+            fecha_final,
+        )
+        filas = extraer_juegos_finalizados(datos)
+        guardados = guardar_juegos_historicos(filas)
+
+        total_encontrados += len(filas)
+        total_guardados += guardados
+
+        print(f"  Encontrados: {len(filas)}")
+        print(f"  Nuevos guardados: {guardados}")
+
+    print("=" * 50)
+    print(f"Total encontrados: {total_encontrados}")
+    print(f"Total nuevos guardados: {total_guardados}")
     print(f"Archivo: {ARCHIVO_HISTORICO}")
 
 
