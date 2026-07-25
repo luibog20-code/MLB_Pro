@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 from dotenv import load_dotenv
 from PIL import Image
+from base_datos import cargar_pronosticos_db
 
 import pandas as pd
 import streamlit as st
@@ -14,6 +15,23 @@ load_dotenv()
 
 ARCHIVO_PRONOSTICOS = Path("data") / "pronosticos.csv"
 ARCHIVO_RESULTADOS = Path("data") / "resultados.csv"
+def cargar_pronosticos():
+    try:
+        datos = cargar_pronosticos_db()
+
+        if datos:
+            return pd.DataFrame(datos)
+
+    except Exception as error:
+        print(
+            "Aviso: no se pudo leer Supabase. "
+            f"Se usará el CSV: {error}"
+        )
+
+    if ARCHIVO_PRONOSTICOS.exists():
+        return pd.read_csv(ARCHIVO_PRONOSTICOS)
+
+    return pd.DataFrame()
 
 
 def configurar_instalacion_movil():
@@ -229,8 +247,9 @@ pestana_pronosticos, pestana_resultados = st.tabs(
 with pestana_pronosticos:
     st.subheader("Pronósticos registrados")
 
-    if ARCHIVO_PRONOSTICOS.exists():
-        pronosticos = pd.read_csv(ARCHIVO_PRONOSTICOS)
+    pronosticos = cargar_pronosticos()
+
+    if not pronosticos.empty:
 
         fecha_reciente = (
             pronosticos["fecha"].astype(str).max()

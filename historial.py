@@ -1,5 +1,6 @@
 import csv
 from pathlib import Path
+from base_datos import guardar_pronostico_db
 
 
 ARCHIVO_PRONOSTICOS = Path("data") / "pronosticos.csv"
@@ -76,5 +77,12 @@ def guardar_pronostico(fila):
         )
         escritor.writeheader()
         escritor.writerows(filas_existentes)
+    try:
+        guardar_pronostico_db(fila)
+    except Exception as error:
+        print(
+            "Aviso: no se pudo guardar en Supabase: "
+            f"{error}"
+        )
 
     return True
